@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Node Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-mark">n<span>·</span></span><div>node manager<small>YOUR RUNTIME, IN ORDER.</small></div></div>
+    <div class="workspace-label">WORKSPACE</div>
+    <nav aria-label="Main navigation">
+      <button class="nav-item selected" data-page="versions"><span>◈</span> Installed versions <b id="nav-count">0</b></button>
+      <button class="nav-item" data-page="path"><span>⇄</span> PATH editor</button>
+      <button class="nav-item" data-page="chocolatey"><span>▣</span> Chocolatey</button>
+      <button class="nav-item" data-page="activity"><span>≡</span> Activity</button>
+    </nav>
+    <div class="sidebar-tip"><span class="status-dot"></span> A little less environment chaos.<p>Install a version. Set your PATH.<br>Get back to building.</p></div>
+    <div class="sidebar-bottom"><span class="mini-logo">N</span><div>Node Manager <small>Version 1.0.0 · Windows</small></div></div>
+  </aside>
+  <div class="main-shell">
+    <header class="topbar"><div><span class="muted">Workspace</span><span class="slash">/</span><span id="breadcrumb">Installed versions</span></div><div class="topbar-right"><span id="permission" class="badge">User access</span><button id="admin-button" class="text-button">Run as administrator ↗</button></div></header>
+    <main>
+      <div id="notice" role="status" class="notice hidden"></div>
+      <section id="versions-page" class="page">
+        <div class="page-heading"><div><div class="eyebrow">LOCAL ENVIRONMENT</div><h1>Your Node.js, organized<span>.</span></h1><p>Every version, one place. Keep your next project moving.</p></div><div class="heading-actions"><button id="refresh" class="button">↻ &nbsp; Refresh</button><button id="open-install" class="button primary">＋ &nbsp; Install a version</button></div></div>
+        <div class="stats"><article class="stat"><span>INSTALLED VERSIONS</span><strong id="installed-count">—</strong><small>Across your local environment</small></article><article class="stat"><span>ACTIVE IN PATH <i class="status-dot"></i></span><strong id="active-version">—</strong><small id="active-description">The first Node.js in saved PATH</small></article><article class="stat"><span>UPDATES AVAILABLE</span><strong id="update-count">—</strong><small>Latest release within each major</small></article></div>
+        <div class="section-heading"><div><h2>Installed versions <span id="list-count" class="count">0</span></h2><p>Manage runtimes and choose what your terminal finds first.</p></div><button id="add-folder" class="text-button">＋ Add existing folder</button></div>
+        <div class="list-toolbar"><label class="search"><span>⌕</span><input id="search" type="search" placeholder="Find a version or installation path…" aria-label="Search installed versions"></label><label class="filter-label">Show <select id="version-filter" aria-label="Filter installed versions"><option value="all">All versions</option><option value="updates">Updates available</option><option value="path">In PATH</option><option value="managed">Managed by app</option></select></label></div>
+        <div id="version-list" class="version-list" aria-live="polite"></div>
+        <div class="footnote"><span>ⓘ</span><p>Multiple versions can live in PATH. Your terminal uses the first match.<br>Changes apply to new terminals; a project’s version manager may override them.</p><button class="text-button" data-go="path">Open PATH editor →</button></div>
+        <div class="catalog-status"><span id="catalog-status">Release catalog has not been checked.</span><button id="check-updates" class="text-button">Check for updates ↗</button></div>
+      </section>
+      <section id="path-page" class="page hidden">
+        <div class="page-heading"><div><div class="eyebrow">ENVIRONMENT</div><h1>A place for every path<span>.</span></h1><p>Review, reorder, and save the directories Windows searches.</p></div><button id="restore-path" class="button">Undo last PATH save</button></div>
+        <div class="info-panel">Windows normally searches Machine PATH before User PATH. A User PATH entry cannot outrank Node.js in Machine PATH. Existing terminals and version-manager shims may use a different environment.</div>
+        <div class="section-heading"><div class="tabs"><button data-scope="User" class="tab selected">User PATH</button><button data-scope="Machine" class="tab">Machine PATH</button></div><span id="path-dirty" class="muted">No unsaved changes</span></div>
+        <div id="path-list" class="path-list"></div>
+        <div class="path-add"><select id="path-installation" aria-label="Installation to add to PATH"></select><button id="path-add" class="button">＋ Add to PATH</button></div>
+        <div class="path-footer"><p id="path-permission">Changes affect your Windows user account.</p><div><button id="discard-path" class="button">Discard changes</button><button id="save-path" class="button primary">Review & save PATH</button></div></div>
+      </section>
+      <section id="chocolatey-page" class="page hidden">
+        <div class="page-heading"><div><div class="eyebrow">PACKAGE MANAGER</div><h1>A familiar way to install<span>.</span></h1><p>Manage Node.js packages through Chocolatey.</p></div><span id="choco-status" class="badge">Checking…</span></div>
+        <div class="info-panel">Chocolatey packages share a system installation and can replace one another. Use “Install a version” for independent, side-by-side runtimes. Package changes require administrator access.</div>
+        <article id="choco-setup" class="panel hidden"><h2>Set up Chocolatey</h2><p>Install the official Chocolatey package manager. This downloads and runs its setup script from community.chocolatey.org.</p><button id="setup-choco" class="button primary">Set up Chocolatey</button></article>
+        <div id="choco-packages" class="package-grid"></div>
+        <div class="panel"><h2>Install a specific package version</h2><p>Chocolatey package availability can lag behind nodejs.org. A version must exist in the Chocolatey community feed.</p><div class="inline-form"><select id="choco-package" aria-label="Chocolatey package"><option>nodejs-lts</option><option>nodejs.install</option><option>nodejs</option></select><input id="choco-version" placeholder="e.g. 24.11.0" aria-label="Chocolatey version"><button id="choco-specific" class="button">Install version</button></div></div>
+      </section>
+      <section id="activity-page" class="page hidden"><div class="page-heading"><div><div class="eyebrow">ACTIVITY</div><h1>The details, when you need them<span>.</span></h1><p>Operations, download verification, and package manager output.</p></div><button id="open-data" class="button">Open app data ↗</button></div><div class="section-heading"><h2>Operation log</h2><button id="refresh-log" class="text-button">Refresh log</button></div><pre id="activity-log" tabindex="0"></pre><p class="muted">PATH backups and the release cache are stored in app data. Last use is recorded only when a running node.exe is observed during a refresh.</p></section>
+    </main>
+    <footer class="statusbar"><div><span id="busy-dot" class="status-dot"></span><span id="operation-status" role="status">Ready</span></div><span id="platform-status">Windows · Local environment</span></footer>
+  </div>
+  <dialog id="install-dialog"><form method="dialog"><div class="modal-heading"><div><div class="eyebrow">OFFICIAL NODE.JS RELEASES</div><h2>Make room for what’s next.</h2></div><button class="icon-button" aria-label="Close install dialog" value="cancel">×</button></div><p>Install a verified runtime alongside your existing versions.</p><label class="field-label" for="release-select">Version</label><select id="release-select"></select><label class="field-label" for="custom-version">Or enter an exact stable version</label><input id="custom-version" placeholder="24.11.0" pattern="v?[0-9]+\.[0-9]+\.[0-9]+"><div class="modal-note">SHA-256 verified · Includes npm · PATH stays under your control</div><div class="modal-actions"><button class="button" value="cancel">Cancel</button><button id="install-selected" type="button" class="button primary">Install Node.js</button></div></form></dialog>
+  <script src="renderer.js"></script>
+</body>
+</html>

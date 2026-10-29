@@ -1,0 +1,32 @@
+{
+  "name": "node-manager",
+  "version": "1.0.0",
+  "description": "A focused Windows desktop manager for Node.js versions, PATH and Chocolatey.",
+  "author": "Node Manager contributors",
+  "license": "MIT",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test tests/*.test.cjs",
+    "test:desktop": "node scripts/desktop-smoke.cjs",
+    "test:packaged": "node scripts/desktop-smoke.cjs --packaged",
+    "test:install": "node scripts/install-smoke.cjs",
+    "check": "node scripts/check.cjs",
+    "pack": "electron-builder --win --dir",
+    "dist": "electron-builder --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^42.0.0",
+    "electron-builder": "^26.0.12",
+    "@playwright/test": "^1.56.0"
+  },
+  "build": {
+    "appId": "dev.nodemanager.desktop",
+    "productName": "Node Manager",
+    "asar": true,
+    "files": ["src/**/*", "package.json", "LICENSE"],
+    "directories": {"output": "release"},
+    "win": {"target": [{"target": "nsis", "arch": ["x64"]}], "icon": "installer/icon.ico", "requestedExecutionLevel": "asInvoker"},
+    "nsis": {"oneClick": false, "perMachine": true, "allowToChangeInstallationDirectory": true, "include": "installer/chocolatey.nsh", "artifactName": "Node-Manager-Setup-${version}.${ext}"}
+  }
+}
